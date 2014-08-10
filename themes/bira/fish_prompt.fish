@@ -12,7 +12,7 @@ function __user_host
 end
 
 function __current_path
-  echo -n (set_color --bold blue) (pwd) (set_color normal) 
+  echo -n (set_color --bold blue) (prompt_pwd) (set_color normal) 
 end
 
 function _git_branch_name
@@ -28,17 +28,24 @@ function __git_status
     set -l git_branch (_git_branch_name)
 
     if [ (_git_is_dirty) ]
-      set git_info '<'$git_branch"*"'>'
+      set git_info '('$git_branch')?'
     else
-      set git_info '<'$git_branch'>'
+      set git_info '('$git_branch')'
     end
 
-    echo -n (set_color yellow) $git_info (set_color normal) 
+    echo -n -s $git_info 
+  end
+end
+
+function __virtualenv
+  if set -q VIRTUAL_ENV
+    echo -n -s "(" (basename "$VIRTUAL_ENV") ") "
   end
 end
 
 function fish_prompt
   echo -n (set_color white)"╭─"(set_color normal)
+  __virtualenv
   __user_host
   __current_path
   __git_status
